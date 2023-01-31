@@ -1,1 +1,88 @@
-{"mode":"Text","textContent":"#pragma region VEXcode Generated Robot Configuration\n// Make sure all required headers are included.\n#include <stdio.h>\n#include <stdlib.h>\n#include <stdbool.h>\n#include <math.h>\n#include <string.h>\n\n\n#include \"vex.h\"\n\nusing namespace vex;\n\n// Brain should be defined by default\nbrain Brain;\n\n\n// START V5 MACROS\n#define waitUntil(condition)                                                   \\\n  do {                                                                         \\\n    wait(5, msec);                                                             \\\n  } while (!(condition))\n\n#define repeat(iterations)                                                     \\\n  for (int iterator = 0; iterator < iterations; iterator++)\n// END V5 MACROS\n\n\n// Robot configuration code.\n/*vex-vision-config:begin*/\nvision::signature camera__SIG_1 = vision::signature (1, 2835, 4217, 3526,-6851, -5509, -6180,3.6, 0);\nvision camera = vision (PORT11, 50, camera__SIG_1);\n/*vex-vision-config:end*/\nmotor angleMtr = motor(PORT20, ratio18_1, false);\n#pragma endregion VEXcode Generated Robot Configuration\n\n/*----------------------------------------------------------------------------*/\n/*                                                                            */\n/*    Module:       main.cpp                                                  */\n/*    Author:       {author}                                                  */\n/*    Created:      {date}                                                    */\n/*    Description:  V5 project                                                */\n/*                                                                            */\n/*----------------------------------------------------------------------------*/\n\n// Include the V5 Library\n#include \"vex.h\"\n  \n// Allows for easier use of the VEX Library\nusing namespace vex;\n\nint main() {\n  angleMtr.setStopping(hold);\n  angleMtr.setVelocity(2,percent);\n  while (true){\n    camera.takeSnapshot(camera__SIG_1);\n    if (camera.largestObject.exists){\n      Brain.Screen.clearScreen();\n      Brain.Screen.setCursor(1,1);\n      Brain.Screen.print(\"Object Seen   centerX: %f, centerY: %f      \",camera.largestObject.centerX, camera.largestObject.centerY);\n      Brain.Screen.print(angleMtr.position(degrees));\n      while ((camera.largestObject.centerY < 190 || camera.largestObject.centerY > 210)/* && (angleMtr.position(degrees) <= 10.0) && angleMtr.position(degrees) >= -90.0*/ && camera.largestObject.exists) {\n        camera.takeSnapshot(camera__SIG_1);\n        Brain.Screen.setCursor(2,1);\n        Brain.Screen.clearLine(2);\n        Brain.Screen.print(\"Adjusting camera...  centerX: %f, centerY: %f      \",camera.largestObject.centerX, camera.largestObject.centerY);\n        if (camera.largestObject.centerY < 190) {\n          angleMtr.spin(forward);\n        } else if (camera.largestObject.centerY > 210) {\n          angleMtr.spin(reverse);\n        } else { \n          angleMtr.stop();\n        }\n        wait(0.05,seconds);\n      }/*\n      if (angleMtr.position(degrees) < -90.0) {\n        angleMtr.spinToPosition(-89.9,degrees);\n      }\n      else if (angleMtr.position(degrees) > 10.0) {\n        angleMtr.spinToPosition(9.9, degrees);\n      }*/\n      angleMtr.stop();\n      wait(0.1,seconds);\n    } else {\n      angleMtr.stop();\n    }\n  }\n}\n","textLanguage":"cpp","rconfig":[{"port":[11],"name":"camera","customName":true,"deviceType":"Vision","deviceClass":"vision","setting":{"config":"{\"config\":{\"brightness\":50,\"signatures\":[{\"name\":\"SIG_1\",\"parameters\":{\"uMin\":2835,\"uMax\":4217,\"uMean\":3526,\"vMin\":-6851,\"vMax\":-5509,\"vMean\":-6180,\"rgb\":3221010.304093567,\"type\":0,\"name\":\"SIG_1\"},\"range\":3.6},{\"name\":\"SIG_2\",\"parameters\":{\"uMin\":0,\"uMax\":0,\"uMean\":0,\"vMin\":0,\"vMax\":0,\"vMean\":0,\"rgb\":0,\"type\":0,\"name\":\"SIG_2\"},\"range\":2.5},{\"name\":\"SIG_3\",\"parameters\":{\"uMin\":0,\"uMax\":0,\"uMean\":0,\"vMin\":0,\"vMax\":0,\"vMean\":0,\"rgb\":0,\"type\":0,\"name\":\"SIG_3\"},\"range\":2.5},{\"name\":\"SIG_4\",\"parameters\":{\"uMin\":0,\"uMax\":0,\"uMean\":0,\"vMin\":0,\"vMax\":0,\"vMean\":0,\"rgb\":0,\"type\":0,\"name\":\"SIG_4\"},\"range\":2.5},{\"name\":\"SIG_5\",\"parameters\":{\"uMin\":0,\"uMax\":0,\"uMean\":0,\"vMin\":0,\"vMax\":0,\"vMean\":0,\"rgb\":0,\"type\":0,\"name\":\"SIG_5\"},\"range\":2.5},{\"name\":\"SIG_6\",\"parameters\":{\"uMin\":0,\"uMax\":0,\"uMean\":0,\"vMin\":0,\"vMax\":0,\"vMean\":0,\"rgb\":0,\"type\":0,\"name\":\"SIG_6\"},\"range\":2.5},{\"name\":\"SIG_7\",\"parameters\":{\"uMin\":0,\"uMax\":0,\"uMean\":0,\"vMin\":0,\"vMax\":0,\"vMean\":0,\"rgb\":0,\"type\":0,\"name\":\"SIG_7\"},\"range\":2.5}],\"codes\":[]}}","isConfigured":"false"},"triportSourcePort":22},{"port":[20],"name":"angleMtr","customName":true,"deviceType":"Motor","deviceClass":"motor","setting":{"reversed":"false","fwd":"forward","rev":"reverse","gear":"ratio18_1"},"triportSourcePort":22}],"slot":0,"platform":"V5","sdkVersion":"20220726.10.00.00","appVersion":"2.4.0","minVersion":"2.4.0","fileFormat":"1.2.0","icon":"","targetBrainGen":"First","target":"Physical"}
+#pragma region VEXcode Generated Robot Configuration
+// Make sure all required headers are included.
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
+#include <string.h>
+
+
+#include "vex.h"
+
+using namespace vex;
+
+// Brain should be defined by default
+brain Brain;
+
+
+// START V5 MACROS
+#define waitUntil(condition)                                                   \
+  do {                                                                         \
+    wait(5, msec);                                                             \
+  } while (!(condition))
+
+#define repeat(iterations)                                                     \
+  for (int iterator = 0; iterator < iterations; iterator++)
+// END V5 MACROS
+
+
+// Robot configuration code.
+/*vex-vision-config:begin*/
+vision::signature camera__SIG_1 = vision::signature (1, 2835, 4217, 3526,-6851, -5509, -6180,3.6, 0);
+vision camera = vision (PORT11, 50, camera__SIG_1);
+/*vex-vision-config:end*/
+motor angleMtr = motor(PORT20, ratio18_1, false);
+#pragma endregion VEXcode Generated Robot Configuration
+
+/*----------------------------------------------------------------------------*/
+/*                                                                            */
+/*    Module:       main.cpp                                                  */
+/*    Author:       {author}                                                  */
+/*    Created:      {date}                                                    */
+/*    Description:  V5 project                                                */
+/*                                                                            */
+/*----------------------------------------------------------------------------*/
+
+// Include the V5 Library
+#include "vex.h"
+  
+// Allows for easier use of the VEX Library
+using namespace vex;
+
+int main() {
+  angleMtr.setStopping(hold);
+  angleMtr.setVelocity(2,percent);
+  while (true){
+    camera.takeSnapshot(camera__SIG_1);
+    if (camera.largestObject.exists){
+      Brain.Screen.clearScreen();
+      Brain.Screen.setCursor(1,1);
+      Brain.Screen.print("Object Seen   centerX: %f, centerY: %f      ",camera.largestObject.centerX, camera.largestObject.centerY);
+      Brain.Screen.print(angleMtr.position(degrees));
+      while ((camera.largestObject.centerY < 190 || camera.largestObject.centerY > 210)/* && (angleMtr.position(degrees) <= 10.0) && angleMtr.position(degrees) >= -90.0*/ && camera.largestObject.exists) {
+        camera.takeSnapshot(camera__SIG_1);
+        Brain.Screen.setCursor(2,1);
+        Brain.Screen.clearLine(2);
+        Brain.Screen.print("Adjusting camera...  centerX: %f, centerY: %f      ",camera.largestObject.centerX, camera.largestObject.centerY);
+        if (camera.largestObject.centerY < 190) {
+          angleMtr.spin(forward);
+        } else if (camera.largestObject.centerY > 210) {
+          angleMtr.spin(reverse);
+        } else { 
+          angleMtr.stop();
+        }
+        wait(0.05,seconds);
+      }/*
+      if (angleMtr.position(degrees) < -90.0) {
+        angleMtr.spinToPosition(-89.9,degrees);
+      }
+      else if (angleMtr.position(degrees) > 10.0) {
+        angleMtr.spinToPosition(9.9, degrees);
+      }*/
+      angleMtr.stop();
+      wait(0.1,seconds);
+    } else {
+      angleMtr.stop();
+    }
+  }
+}
