@@ -27,11 +27,19 @@ brain Brain;
 
 
 // Robot configuration code.
-motor rightMtr = motor(PORT20, ratio18_1, true);
+motor leftMtr = motor(PORT20, ratio18_1, true);
 
-motor leftMtr = motor(PORT11, ratio18_1, false);
+motor rightMtr = motor(PORT11, ratio18_1, false);
 
 controller Controller1 = controller(primary);
+motor aimMtr = motor(PORT10, ratio18_1, false);
+
+motor shootMtrMotorA = motor(PORT15, ratio18_1, false);
+motor shootMtrMotorB = motor(PORT19, ratio18_1, true);
+motor_group shootMtr = motor_group(shootMtrMotorA, shootMtrMotorB);
+
+motor strMtr = motor(PORT17, ratio18_1, false);
+
 
 
 
@@ -50,11 +58,82 @@ bool RemoteControlCodeEnabled = true;
 
 // Include the V5 Library
 #include "vex.h"
+#include "string"
 
 // Allows for easier use of the VEX Library
 using namespace vex;
 
 // Begin project code
+
+std::string curDir = "";
+
+void strL() {
+  if (curDir != "l") {
+    strMtr.spin(forward);
+    curDir = "l";
+  } else {
+    curDir = "";
+    strMtr.stop();
+  }
+}
+void strR(){
+  if (curDir != "r") {
+    strMtr.spin(reverse);
+    curDir = "r";
+  } else {
+    curDir = "";
+    strMtr.stop();
+  }
+}
+
+bool aimSpinning = false;
+
+
+void aimUp(){
+  aimMtr.setVelocity(50,percent);
+  aimMtr.setStopping(hold);
+  if (!aimSpinning) {
+    aimMtr.spin(forward);
+    aimSpinning = true;
+  } else {
+    aimMtr.stop();
+    aimSpinning = false;
+  }
+}
+
+void aimDown(){
+  aimMtr.setVelocity(50,percent);
+  aimMtr.setStopping(hold);
+  if (!aimSpinning) {
+    aimMtr.spin(reverse);
+    aimSpinning = true;
+  } else {
+    aimMtr.stop();
+    aimSpinning = false;
+  }
+}
+
+bool pickingUp = false;
+
+void pickUpToggle(){
+  if (!pickingUp) {
+    shootMtr.setVelocity(50,percent);
+    shootMtr.spin(forward);
+    pickingUp = true;
+  } else {
+    shootMtr.stop();
+    pickingUp = false;
+  }
+}
+
+void shoot(){
+  if (!shootMtr.isSpinning()) {
+    shootMtr.setVelocity(100,percent);
+    shootMtr.spin(reverse);
+    wait(0.5,seconds);
+    shootMtr.stop();
+  }
+}
 
 void preAutonomous(void) {
   // actions to do when the program starts
@@ -74,9 +153,17 @@ void userControl(void) {
   leftMtr.spin(forward);
   rightMtr.spin(forward);
   // place driver control in this while loop
+  Controller1.ButtonL2.released(strL);
+  Controller1.ButtonR2.released(strR);
+  Controller1.ButtonUp.pressed(aimUp);
+  Controller1.ButtonUp.released(aimUp); 
+  Controller1.ButtonDown.pressed(aimDown);
+  Controller1.ButtonDown.released(aimDown);
+  Controller1.ButtonB.released(pickUpToggle);
+  Controller1.ButtonA.released(shoot);
   while (true) {
-    leftMtr.setVelocity(Controller1.Axis3.position()/1.5, rpm);
-    rightMtr.setVelocity(Controller1.Axis2.position()/1.5, rpm);
+    leftMtr.setVelocity(Controller1.Axis2.position()*1.5, rpm);
+    rightMtr.setVelocity(Controller1.Axis3.position()*1.5, rpm);
     wait(20, msec);
   }
 }
@@ -89,7 +176,7 @@ int main() {
   // create competition instance
   competition Competition;
 
-  Controller1.ButtonL1.released(endLIFE);
+  Controller1.ButtonX.released(endLIFE);
 
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
