@@ -28,7 +28,7 @@ brain Brain;
 
 // Robot configuration code.
 /*vex-vision-config:begin*/
-vision::signature camera__SIG_1 = vision::signature (1, 2835, 4217, 3526,-6851, -5509, -6180,3.6, 0);
+vision::signature camera__SIG_1 = vision::signature (1, -6553, -5363, -5958,-2819, -1489, -2154,6, 0);
 vision camera = vision (PORT11, 50, camera__SIG_1);
 /*vex-vision-config:end*/
 motor angleMtr = motor(PORT20, ratio18_1, false);
@@ -51,38 +51,62 @@ using namespace vex;
 
 int main() {
   angleMtr.setStopping(hold);
-  angleMtr.setVelocity(2,percent);
+  angleMtr.setVelocity(5,percent);
   while (true){
     camera.takeSnapshot(camera__SIG_1);
     if (camera.largestObject.exists){
       Brain.Screen.clearScreen();
       Brain.Screen.setCursor(1,1);
-      Brain.Screen.print("Object Seen   centerX: %f, centerY: %f      ",camera.largestObject.centerX, camera.largestObject.centerY);
+      Brain.Screen.print("Object Seen   centerX: %d, centerY: %d      ",camera.largestObject.centerX, camera.largestObject.centerY);
       Brain.Screen.print(angleMtr.position(degrees));
-      while ((camera.largestObject.centerY < 190 || camera.largestObject.centerY > 210)/* && (angleMtr.position(degrees) <= 10.0) && angleMtr.position(degrees) >= -90.0*/ && camera.largestObject.exists) {
+      /*while ((camera.largestObject.centerY < 95 || camera.largestObject.centerY > 105) && camera.largestObject.exists) {
         camera.takeSnapshot(camera__SIG_1);
         Brain.Screen.setCursor(2,1);
-        Brain.Screen.clearLine(2);
-        Brain.Screen.print("Adjusting camera...  centerX: %f, centerY: %f      ",camera.largestObject.centerX, camera.largestObject.centerY);
-        if (camera.largestObject.centerY < 190) {
+        Brain.Screen.clearScreen();
+        Brain.Screen.print("centerX: %d, centerY: %d      ",camera.largestObject.centerX, camera.largestObject.centerY);
+        Brain.Screen.setCursor(3,1);
+        Brain.Screen.clearLine(3);
+        if (camera.largestObject.centerY < 95) {
           angleMtr.spin(forward);
-        } else if (camera.largestObject.centerY > 210) {
+          Brain.Screen.print("Below 190");
+        } else if (camera.largestObject.centerY > 105) {
           angleMtr.spin(reverse);
+          Brain.Screen.print("Above 210");
         } else { 
           angleMtr.stop();
         }
+        if (!camera.largestObject.exists) {
+          break;
+        }
         wait(0.05,seconds);
-      }/*
-      if (angleMtr.position(degrees) < -90.0) {
-        angleMtr.spinToPosition(-89.9,degrees);
-      }
-      else if (angleMtr.position(degrees) > 10.0) {
-        angleMtr.spinToPosition(9.9, degrees);
       }*/
+      while ((camera.largestObject.centerX < 140 || camera.largestObject.centerX > 160)/* && (angleMtr.position(degrees) <= 10.0) && angleMtr.position(degrees) >= -90.0*/ && camera.largestObject.exists) {
+        camera.takeSnapshot(camera__SIG_1);
+        Brain.Screen.setCursor(2,1);
+        Brain.Screen.clearScreen();
+        Brain.Screen.print("centerX: %d, centerY: %d      ",camera.largestObject.centerX, camera.largestObject.centerY);
+        Brain.Screen.setCursor(3,1);
+        Brain.Screen.clearLine(3);
+        if (camera.largestObject.centerX < 140) {
+          angleMtr.spin(forward);
+          Brain.Screen.print("Below 140");
+        } else if (camera.largestObject.centerX > 160) {
+          angleMtr.spin(reverse);
+          Brain.Screen.print("Above 160");
+        } else { 
+          angleMtr.stop();
+        }
+        if (!camera.largestObject.exists) {
+          break;
+        }
+        wait(0.05,seconds);
+      }
+
       angleMtr.stop();
       wait(0.1,seconds);
     } else {
       angleMtr.stop();
     }
+    Brain.Screen.clearScreen();
   }
 }
